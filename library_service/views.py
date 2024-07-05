@@ -1,3 +1,15 @@
-from django.shortcuts import render
+from rest_framework import viewsets, mixins
+from library_service.models import (
+    Book,
+    Borrowing,
+    Payment,
+)
+from library_service.serializers import (
+    BookSerializer,
+)
 
-# Create your views here.
+
+class BookViewSet(viewsets.ModelViewSet):
+    """Books used in the library"""
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
