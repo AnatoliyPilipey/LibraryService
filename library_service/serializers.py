@@ -32,4 +32,11 @@ class BorrowingSerializer(serializers.ModelSerializer):
         )
 
 
-
+class BorrowingCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Borrowing
+        fields = (
+            "expected_return",
+            "book_id",
+            "user_id",
+        )
