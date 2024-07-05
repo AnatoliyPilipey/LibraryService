@@ -21,3 +21,15 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Borrowing(models.Model):
+    borrow_date = models.DateField()
+    expected_return = models.DateField()
+    actual_return = models.DateField(null=True)
+    book_id = models.IntegerField()
+    user_id = models.IntegerField(
+    )
+
+    def __str__(self):
+        return self.expected_return
