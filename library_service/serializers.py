@@ -18,3 +18,34 @@ class BookSerializer(serializers.ModelSerializer):
             "inventory",
             "daile",
         )
+
+
+class BorrowingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Borrowing
+        fields = (
+            "borrow_date",
+            "book_id",
+            "user_id",
+        )
+
+
+class BorrowingCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Borrowing
+        fields = (
+            "book_id",
+            "user_id",
+        )
+
+
+class BorrowingDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Borrowing
+        fields = (
+            "borrow_date",
+            "expected_return",
+            "actual_return",
+            "book_id",
+            "user_id",
+        )
