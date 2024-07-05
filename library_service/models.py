@@ -33,3 +33,26 @@ class Borrowing(models.Model):
 
     def __str__(self):
         return self.expected_return
+
+
+class Payment(models.Model):
+    PENDING = "PEND"
+    PAID = "PAID"
+    STATUS_CHOICES = [
+        (PENDING, "Pending"),
+        (PAID, "Paid"),
+    ]
+
+    PAYMENT = "PAYM"
+    FINE = "FINE"
+    TYPE_CHOICES = [
+        (PAYMENT, "Payment"),
+        (FINE, "Fine"),
+    ]
+    borrowing_id = models.IntegerField()
+    session_url = models.URLField(max_length=255)
+    session_id = models.CharField(max_length=255)
+
+    @property
+    def money_to_pay(self):
+        pass
