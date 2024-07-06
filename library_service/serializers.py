@@ -59,6 +59,12 @@ class BorrowingCreateSerializer(serializers.ModelSerializer):
             )
         return data
 
+    def create(self, validated_data):
+        book = Book.objects.get(id=validated_data["book_id"])
+        book.inventory -= 1
+        book.save()
+        return Borrowing.objects.create(**validated_data)
+
 
 class BorrowingDetailSerializer(serializers.ModelSerializer):
     class Meta:
