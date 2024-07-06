@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
 from library_service.models import (
     Book,
     Borrowing,
@@ -52,8 +53,11 @@ class BorrowingCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 f"You try take book with id={data["book_id"]} library have not book with this id"
             )
+        if get_object_or_404(Book, id=data["book_id"]).inventory <= 0:
+            raise serializers.ValidationError(
+                f"All books with id={data["book_id"]} now taken"
+            )
         return data
-
 
 
 class BorrowingDetailSerializer(serializers.ModelSerializer):
