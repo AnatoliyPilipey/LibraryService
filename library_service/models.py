@@ -24,7 +24,7 @@ class Book(models.Model):
 
 
 class Borrowing(models.Model):
-    borrow_date = models.DateField()
+    borrow_date = models.DateField(auto_now_add=True)
     expected_return = models.DateField()
     actual_return = models.DateField(null=True)
     book_id = models.IntegerField()
