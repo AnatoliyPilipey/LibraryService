@@ -1,5 +1,10 @@
 from rest_framework import viewsets, mixins
+from django.db import transaction
+from datetime import date
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
 from library_service.permissions import IsAdminOrIfAuthenticatedReadOnly
 from library_service.models import (
     Book,
@@ -37,3 +42,19 @@ class BorrowingViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user_id=self.request.user.id)
+
+    @action(detail=True, methods=["post"])
+    def return_borrowing(self, request, pk=None):
+        borrowing = Borrowing.objects.get(id=pk)
+        if not borrowing.actual_return:
+            with transaction.atomic():
+                book = Book.objects.get(id=borrowing.book_id)
+                book.inventory += 1
+                book.save()
+
+                borrowing.actual_return = f"{date.today().strftime("%Y-%m-%d")}"
+                borrowing.save()
+                response_return = Response({"message": f"You returned the book"})
+        else:
+            response_return = Response({"message": f"The book has already been returned"})
+        return response_return
