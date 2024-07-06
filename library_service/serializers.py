@@ -48,6 +48,10 @@ class BorrowingCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "You borrowed a book and have to return it before you can borrow the next one."
             )
+        if not Book.objects.filter(id=data["book_id"]).exists():
+            raise serializers.ValidationError(
+                f"You try take book with id={data["book_id"]} library have not book with this id"
+            )
         return data
 
 
