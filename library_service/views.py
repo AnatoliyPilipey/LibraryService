@@ -24,7 +24,16 @@ class BookViewSet(viewsets.ModelViewSet):
 class BorrowingViewSet(viewsets.ModelViewSet):
     """Displays the current status of borrowed books"""
     queryset = Borrowing.objects.all()
-    serializer_class = BookSerializer
+    serializer_class = BorrowingSerializer
     permission_classes = (IsAuthenticated,)
+
+    def get_serializer_class(self):
+        serializer = self.serializer_class
+        if self.action == "retrieve":
+            serializer = BorrowingDetailSerializer
+        if self.action == "create":
+            serializer = BorrowingCreateSerializer
+        return serializer
+
 
 

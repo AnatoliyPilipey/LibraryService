@@ -35,6 +35,7 @@ class BorrowingCreateSerializer(serializers.ModelSerializer):
         fields = (
             "book_id",
             "user_id",
+            "expected_return",
         )
 
 
