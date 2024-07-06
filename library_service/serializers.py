@@ -29,6 +29,7 @@ class BorrowingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Borrowing
         fields = (
+            "id",
             "book_id",
             "user_id",
         )
@@ -41,6 +42,14 @@ class BorrowingCreateSerializer(serializers.ModelSerializer):
             "book_id",
             "expected_return",
         )
+
+    def validate(self, data):
+        if Borrowing.objects.filter(user_id=self.context["request"].auth["user_id"]).exists():
+            raise serializers.ValidationError(
+                "You borrowed a book and have to return it before you can borrow the next one."
+            )
+        return data
+
 
 
 class BorrowingDetailSerializer(serializers.ModelSerializer):
