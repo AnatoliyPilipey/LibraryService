@@ -7,8 +7,8 @@ from library_service.views import (
 
 
 router = routers.DefaultRouter()
-router.registry("book", BookViewSet)
-router.registry("borrowing", BorrowingViewSet)
+router.register("book", BookViewSet)
+router.register("borrowing", BorrowingViewSet)
 
 urlpatterns = [path("", include(router.urls))]
 
