@@ -16,8 +16,13 @@ class BookSerializer(serializers.ModelSerializer):
             "author",
             "cover",
             "inventory",
-            "daile",
+            "daily",
         )
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["daily"] = float(representation["daily"])
+        return representation
 
 
 class BorrowingSerializer(serializers.ModelSerializer):
