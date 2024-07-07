@@ -1,10 +1,12 @@
 from rest_framework import viewsets, mixins
 from django.db import transaction
 from datetime import date
+from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
+from user.models import User
 from library_service.permissions import IsAdminOrIfAuthenticatedReadOnly
 from library_service.models import (
     Book,
@@ -17,6 +19,14 @@ from library_service.serializers import (
     BorrowingCreateSerializer,
     BorrowingDetailSerializer,
 )
+
+
+def str_to_bool(value_str: str):
+    if value_str.lower() == "true":
+        return True
+    elif value_str.lower() == "false":
+        return False
+    raise ValueError("The is_active must be True or False")
 
 
 class BookViewSet(viewsets.ModelViewSet):
@@ -43,8 +53,8 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user_id=self.request.user.id)
 
-    @action(detail=True, methods=["post"])
-    def return_borrowing(self, request, pk=None):
+    @action(detail=True, methods=["get", "post"])
+    def returnn(self, request, pk=None):
         borrowing = Borrowing.objects.get(id=pk)
         if not borrowing.actual_return:
             with transaction.atomic():
@@ -58,3 +68,6 @@ class BorrowingViewSet(viewsets.ModelViewSet):
         else:
             response_return = Response({"message": f"The book has already been returned"})
         return response_return
+
+    def destroy(self, request, *args, **kwargs):
+        raise MethodNotAllowed("DELETE")
