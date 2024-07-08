@@ -1,4 +1,4 @@
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from django.db import transaction
 from datetime import date
 from django.shortcuts import get_object_or_404
@@ -21,14 +21,6 @@ from library_service.serializers import (
 )
 
 
-def str_to_bool(value_str: str):
-    if value_str.lower() == "true":
-        return True
-    elif value_str.lower() == "false":
-        return False
-    raise ValueError("The is_active must be True or False")
-
-
 class BookViewSet(viewsets.ModelViewSet):
     """Books used in the library"""
     queryset = Book.objects.all()
@@ -41,6 +33,13 @@ class BorrowingViewSet(viewsets.ModelViewSet):
     queryset = Borrowing.objects.all()
     serializer_class = BorrowingSerializer
     permission_classes = (IsAuthenticated,)
+
+    @staticmethod
+    def str_to_bool(value_str: str):
+        if value_str.lower() == "true":
+            return True
+        elif value_str.lower() == "false":
+            return False
 
     def get_serializer_class(self):
         serializer = self.serializer_class
@@ -71,3 +70,30 @@ class BorrowingViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         raise MethodNotAllowed("DELETE")
+
+    def get_queryset(self):
+        queryset = self.queryset
+        if self.action == "list":
+            user_id = self.request.query_params.get("user_id")
+            is_active = self.request.query_params.get("is_active")
+            is_admin = self.request.user.is_staff
+
+            if is_admin:
+                if user_id:
+                    get_object_or_404(User, id=user_id)
+                    queryset = queryset.filter(user_id=user_id)
+                if is_active:
+                    queryset = queryset.filter(actual_return__isnull=self.str_to_bool(is_active))
+            else:
+                if is_active.lower() in ("true", "false"):
+                    queryset = queryset.filter(user_id=self.request.auth["user_id"])
+                    queryset = queryset.filter(actual_return__isnull=self.str_to_bool(is_active))
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        is_active = request.query_params.get("is_active")
+        if is_active is not None:
+            if is_active.lower() not in ["true", "false"]:
+                return Response({"detail": "is_active must be 'true' or 'false'"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return super().list(request, *args, **kwargs)
