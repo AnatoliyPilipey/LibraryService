@@ -89,3 +89,11 @@ class BorrowingViewSet(viewsets.ModelViewSet):
                     queryset = queryset.filter(user_id=self.request.auth["user_id"])
                     queryset = queryset.filter(actual_return__isnull=self.str_to_bool(is_active))
         return queryset
+
+    def list(self, request, *args, **kwargs):
+        is_active = request.query_params.get("is_active")
+        if is_active is not None:
+            if is_active.lower() not in ["true", "false"]:
+                return Response({"detail": "is_active must be 'true' or 'false'"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return super().list(request, *args, **kwargs)
