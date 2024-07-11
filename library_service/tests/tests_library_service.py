@@ -100,3 +100,14 @@ class AuthenticatedBookApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
+    def test_create_book_forbidden(self):
+        payload = {
+            "title": "Sample title",
+            "author": "Author",
+            "inventory": 4,
+            "daily": 0.1,
+        }
+        res = self.client.post(BOOK_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
