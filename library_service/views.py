@@ -36,9 +36,9 @@ class BorrowingViewSet(viewsets.ModelViewSet):
 
     @staticmethod
     def str_to_bool(value_str: str):
-        if value_str.lower() == "true":
+        if value_str == "true":
             return True
-        elif value_str.lower() == "false":
+        elif value_str == "false":
             return False
 
     def get_serializer_class(self):
@@ -85,8 +85,8 @@ class BorrowingViewSet(viewsets.ModelViewSet):
                 if is_active:
                     queryset = queryset.filter(actual_return__isnull=self.str_to_bool(is_active))
             else:
-                if is_active.lower() in ("true", "false"):
-                    queryset = queryset.filter(user_id=self.request.auth["user_id"])
+                if is_active in ("true", "false"):
+                    queryset = queryset.filter(user_id=self.request.user.id)
                     queryset = queryset.filter(actual_return__isnull=self.str_to_bool(is_active))
         return queryset
 
