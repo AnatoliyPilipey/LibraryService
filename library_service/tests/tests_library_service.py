@@ -133,3 +133,13 @@ class AuthenticatedBorrowingApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
+
+    def test_retrieve_borrowing_detail(self):
+        sample_book()
+        borrowing = sample_borrowing()
+        url = detail_borrowing_url(borrowing.id)
+        res = self.client.get(url)
+
+        serializer = BorrowingDetailSerializer(borrowing)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
