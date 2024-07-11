@@ -265,3 +265,35 @@ class AdminBorrowingApiTests(TestCase):
 
         self.assertIn(serializer2.data, res.data)
         self.assertIn(serializer1.data, res.data)
+
+    def test_filter_borrowing_by_user_id(self):
+        book = sample_book()
+        borrowing1 = sample_borrowing(
+            expected_return="2024-07-11",
+            book_id=book.id,
+        )
+
+        self.client = APIClient()
+        self.user2 = get_user_model().objects.create_user(
+            "test2@test.com",
+            "testpassword",
+            is_staff=True,
+
+        )
+        self.client.force_authenticate(self.user2)
+
+        borrowing2 = sample_borrowing(
+            expected_return="2026-07-30",
+            book_id=book.id,
+            user_id=self.user2.id
+        )
+
+        res = self.client.get(
+            BORROWING_URL, {"user_id": 1}
+        )
+
+        serializer1 = BorrowingSerializer(borrowing1)
+        serializer2 = BorrowingSerializer(borrowing2)
+
+        self.assertIn(serializer1.data, res.data)
+        self.assertNotIn(serializer2.data, res.data)
