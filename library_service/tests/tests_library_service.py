@@ -111,3 +111,25 @@ class AuthenticatedBookApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
+
+class AuthenticatedBorrowingApiTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(
+            "test@test.com",
+            "testpassword",
+        )
+        self.client.force_authenticate(self.user)
+
+    def test_list_borrowing(self):
+        sample_book()
+        sample_borrowing()
+        sample_borrowing()
+
+        res = self.client.get(BORROWING_URL)
+
+        borrowing = Borrowing.objects.all()
+        serializer = BorrowingSerializer(borrowing, many=True)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
