@@ -223,3 +223,13 @@ class AuthenticatedBorrowingApiTests(TestCase):
         self.assertIn(serializer2.data, res.data)
         self.assertNotIn(serializer1.data, res.data)
 
+
+class AdminBorrowingApiTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(
+            "admin@admin.com",
+            "testpass",
+            is_staff=True,
+        )
+        self.client.force_authenticate(self.user)
