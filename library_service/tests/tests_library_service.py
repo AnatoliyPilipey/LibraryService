@@ -68,3 +68,25 @@ class UnauthenticatedBorrowingApiTests(TestCase):
     def test_auth_required(self):
         res = self.client.get(BORROWING_URL)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class AuthenticatedBookApiTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(
+            "test@test.com",
+            "testpassword",
+        )
+        self.client.force_authenticate(self.user)
+
+    def test_list_book(self):
+        sample_book()
+
+        res = self.client.get(BOOK_URL)
+
+        book = Book.objects.all()
+        serializer = BookSerializer(book, many=True)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
+
