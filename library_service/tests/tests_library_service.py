@@ -153,3 +153,19 @@ class AuthenticatedBorrowingApiTests(TestCase):
         res = self.client.post(BORROWING_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+    def test_create_borrowing_user_is_its_auth_user(self):
+        unauthenticated_user = get_user_model().objects.create_user(
+            "unauthenticated2@test.com",
+            "testpassword",
+        )
+        book = sample_book()
+        payload = {
+            "expected_return": "2024-07-10",
+            "book_id": book.id,
+            "user_id": unauthenticated_user.id,
+        }
+        res = self.client.post(BORROWING_URL, payload)
+        borrowing = Borrowing.objects.get(id=1)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(borrowing.user_id, self.user.id)
