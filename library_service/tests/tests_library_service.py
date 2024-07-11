@@ -169,3 +169,26 @@ class AuthenticatedBorrowingApiTests(TestCase):
         borrowing = Borrowing.objects.get(id=1)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(borrowing.user_id, self.user.id)
+
+    def test_filter_borrowing_by_is_active_true(self):
+
+        book = sample_book()
+        borrowing1 = sample_borrowing(
+            expected_return="2024-07-11",
+            book_id=book.id,
+        )
+        borrowing2 = sample_borrowing(
+            expected_return="2026-07-30",
+            book_id=book.id,
+            actual_return="2024-07-11",
+        )
+
+        res = self.client.get(
+            BORROWING_URL, {"is_active": "true"}
+        )
+
+        serializer1 = BorrowingSerializer(borrowing1)
+        serializer2 = BorrowingSerializer(borrowing2)
+
+        self.assertIn(serializer1.data, res.data)
+        self.assertNotIn(serializer2.data, res.data)
