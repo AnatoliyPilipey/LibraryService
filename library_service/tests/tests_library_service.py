@@ -143,3 +143,13 @@ class AuthenticatedBorrowingApiTests(TestCase):
         serializer = BorrowingDetailSerializer(borrowing)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
+
+    def test_create_borrowing(self):
+        book = sample_book()
+        payload = {
+            "expected_return": "2024-07-10",
+            "book_id": book.id,
+        }
+        res = self.client.post(BORROWING_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
