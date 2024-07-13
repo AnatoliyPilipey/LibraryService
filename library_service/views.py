@@ -1,3 +1,5 @@
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, mixins, status
 from django.db import transaction
 from datetime import date
@@ -90,10 +92,29 @@ class BorrowingViewSet(viewsets.ModelViewSet):
                     queryset = queryset.filter(actual_return__isnull=self.str_to_bool(is_active))
         return queryset
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "user_id",
+                type=int,
+                description="Filter by user id (ex. ?user_id=2)",
+            ),
+            OpenApiParameter(
+                "is_active",
+                type=str,
+                description="Filtering by active borrowings (ex. ?is_active=true or false)",
+            ),
+        ]
+    )
     def list(self, request, *args, **kwargs):
+        """Displays the current status of borrowed books"""
         is_active = request.query_params.get("is_active")
         if is_active is not None:
             if is_active.lower() not in ["true", "false"]:
                 return Response({"detail": "is_active must be 'true' or 'false'"}, status=status.HTTP_400_BAD_REQUEST)
 
+        return super().list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """Info Borrowing book with detail"""
         return super().list(request, *args, **kwargs)
