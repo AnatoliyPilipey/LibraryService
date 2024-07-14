@@ -113,3 +113,10 @@ This service provides information about available books and allows you to borrow
 #### Note
 
 _Thank you for familiarizing yourself with my work._
+
+Foto project
+![Book_detail](book_detail.png)
+![Book_list](book_list.png)
+![Borrowing_list](borrowing_list.png)
+![Me](me.png)
+![Token](token.png)
