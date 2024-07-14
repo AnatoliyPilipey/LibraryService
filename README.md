@@ -102,8 +102,14 @@ This service provides information about available books and allows you to borrow
     ```shell 
     celery -A taskmanagment beat -l INFO
     ```
-21. Now we will be able to connect periodic tasks and customize their execution.
-
+21. Now you need to go to the admin to connect periodic tasks and customize their execution.
+22. You can run the application through the Docker, for this purpose execute the following command.
+    ```shell 
+    docker-compose build
+    ```
+    ```shell 
+    docker-compose up
+    ```
 #### Note
 
 _Thank you for familiarizing yourself with my work._
