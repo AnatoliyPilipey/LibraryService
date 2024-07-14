@@ -63,7 +63,7 @@ class BorrowingViewSet(viewsets.ModelViewSet):
                 book.inventory += 1
                 book.save()
 
-                borrowing.actual_return = f"{date.today().strftime("%Y-%m-%d")}"
+                borrowing.actual_return = f"{date.today().strftime('%Y-%m-%d')}"
                 borrowing.save()
                 response_return = Response({"message": f"You returned the book"})
         else:
