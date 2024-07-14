@@ -1,0 +1,45 @@
+services:
+  web:
+    build: .
+    command: >
+      sh -c "python manage.py wait_for_db &&
+          python manage.py migrate &&
+          python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./:/code
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+
+  redis:
+    image: "redis:alpine"
+
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: "celery -A taskmanagment worker -l info"
+    depends_on:
+      - web
+      - redis
+    restart: on-failure
+    env_file:
+      - .env
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      sh -c "python manage.py wait_for_db &&
+            celery -A taskmanagment beat -l INFO"
+    depends_on:
+      - web
+      - redis
+    restart: on-failure
+    env_file:
+      - .env
