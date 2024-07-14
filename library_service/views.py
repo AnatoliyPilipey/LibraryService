@@ -114,7 +114,3 @@ class BorrowingViewSet(viewsets.ModelViewSet):
                 return Response({"detail": "is_active must be 'true' or 'false'"}, status=status.HTTP_400_BAD_REQUEST)
 
         return super().list(request, *args, **kwargs)
-
-    def retrieve(self, request, *args, **kwargs):
-        """Info Borrowing book with detail"""
-        return super().list(request, *args, **kwargs)
